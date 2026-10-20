@@ -3,11 +3,11 @@
 If you want the original hw-starter README.md file, it will be listed down below.
 There are a few things to note before contributing to this repository. Please keep them in mind guys
 
-1/ Do git rebase before doing git push. 
-2/ Preferrably just use Pull Requests before merging changes into main. You MAY push to main, but it's **highly unrecommended** since everyone will have to rebase their code before pushing.
-3/ Do your work on a separate branch, push it to github and then open a PR. Someone will be there to review your code and make sure it works on their system.
+1/ Do git rebase before doing git push. <br>
+2/ Preferrably just use Pull Requests before merging changes into main. You MAY push to main, but it's **highly unrecommended** since everyone will have to rebase their code before pushing. <br>
+3/ Do your work on a separate branch, push it to github and then open a PR. Someone will be there to review your code and make sure it works on their system. <br>
 
-That's it basically
+That's it basically <br>
 
 # CS4421 hardware inspector: starter code
 
