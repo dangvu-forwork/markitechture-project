@@ -1,0 +1,6 @@
+{
+    // Necessary so java can use libraries referenced under jar folder
+    "java.project.referencedLibraries": [
+        "jar/**/*.jar"
+    ]
+}
