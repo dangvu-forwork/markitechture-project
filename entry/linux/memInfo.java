@@ -1,3 +1,5 @@
+package entry.linux;
+
 import java.nio.file.Path;
 
 /**
