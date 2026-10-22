@@ -10,28 +10,26 @@ That's it basically <br>
 
 ## how 2 run
 
-The Makefile uses GNU Make, a JDK, and the Gson JAR in `jar/`. Its source list
-automatically discovers Java files under `entry/`, including both `entry/linux`
-and `entry/windows`.
-
-From the project root on Linux:
+Well there's the Makefile behavior and the standalone behavior.
+The Makefile behavior is for those who have access to a Linux system
+Here are the following commands you can run with Makefile
 
 ```sh
 make build       # Compile the project
 make run         # Run entry.index; it selects behavior based on the OS
-make build-linux # Compile the project
-make run-linux   # Run entry.linux.demo directly
+make build-linux # Compile the project... Literally identical to make build for now but maybe this will find its use
+make run-linux   # Run entry.linux.demo directly, without regard for your current OS
 ```
 
-The Makefile uses Linux shell and classpath syntax. On Windows, compile and run
-with PowerShell instead:
-
+If you don't have a Linux system, you can also run these commands in a Windows type system (for building)
 ```powershell
-javac -cp "jar\*" -d out lib\format.java entry\index.java entry\linux\*.java
-java -cp "out;jar\*" entry.index
+New-Item -ItemType Directory -Force out | Out-Null
+$sources = Get-ChildItem entry -Recurse -Filter *.java | ForEach-Object { $_.FullName }
+javac -cp "jar\*" -d out lib\format.java $sources
 ```
 
-Run commands from the project root so the `ids` directory is available.
+Yes, a clanker wrote the powershell commands above.
+If you want to run the OS Interpreter / directly run an OS behavior, just copy the code used to run them in Makefile and paste it in terminal
 
 ## The ID files
 
