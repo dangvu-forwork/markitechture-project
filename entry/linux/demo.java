@@ -6,6 +6,7 @@ import lib.format.MemoryInfo;
 import lib.format.PCIDevice;
 import lib.format.SystemInfo;
 import lib.format.USBDevice;
+import lib.format.ByteUnits;
 
 import java.util.ArrayList;
 
@@ -33,10 +34,26 @@ public class demo {
             return cpuInfo.getModel();
         }
 
+        /** Refer to getMemoryInfo with a long in it called byteUnits. This method is js a wrapper. */
         @Override
         public MemoryInfo getMemoryInfo() {
-            return new MemoryInfo(memInfo.getTotal(), memInfo.getUsed());
+            return getMemoryInfo(ByteUnits.KiB);
         }
+
+        /** 
+         * Gets the memory info (Busy + idle cores) and returns it in the byteUnits format.
+         * NOTE: Directly avoid using powers of 2, since ByteUnits.B, ByteUnits.KiB and whatever exists.
+         * Using powers of 2 makes the code less readable for others.
+         * 
+         * additional QnA
+         * Q: Why did you divide byteUnits by ByteUnits.KiB?
+         * A: .getTotal() and .getUsed() already returns in a KiB format. So in a way, KiB is the default format.
+        */
+        @Override
+        public MemoryInfo getMemoryInfo(long byteUnits) {
+            return new MemoryInfo(memInfo.getTotal() / (byteUnits / ByteUnits.KiB), memInfo.getUsed() / (byteUnits / ByteUnits.KiB));
+        }
+
 
         @Override
         public ArrayList<CoreInfo> getCoreInfos() {
