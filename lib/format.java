@@ -11,6 +11,23 @@ import java.util.Map;
 /** Public system-information models and JSON helpers. */
 public final class format {
 
+    // Abstract: You cannot create a new instance of it
+    /** 
+     * 
+     * ByteUnits instance. Don't even try to extend this or anything.
+     * Don't create a new instance of this class. It serves no purpose
+     * You should refer B; KiB; MiB and GiB off this class. Check entry > windows > demo.java for more info on how to use it
+     * 
+    */
+    public static final class ByteUnits {
+        private ByteUnits() {};
+
+        public static final long B = 1L;
+        public static final long KiB = 1024L;
+        public static final long MiB = 1024L * 1024L;
+        public static final long GiB = 1024L * 1024L * 1024L;
+    }
+
     public static class MemoryInfo {
         public double totalMemory;
         public double usedMemory;
@@ -18,6 +35,7 @@ public final class format {
         public MemoryInfo(double totalMemory, double usedMemory) {
             this.totalMemory = totalMemory;
             this.usedMemory = usedMemory;
+
         }
     }
 
@@ -43,6 +61,7 @@ public final class format {
 
     public static class PCIDevice {
         public String address;
+        public String name;
         public int bus;
         public int device;
         public int function;
@@ -52,7 +71,13 @@ public final class format {
 
         public PCIDevice(String address, int bus, int device, int function,
                          int vendorId, int deviceId, int classCode) {
+            this(address, null, bus, device, function, vendorId, deviceId, classCode);
+        }
+
+        public PCIDevice(String address, String name, int bus, int device, int function,
+                         int vendorId, int deviceId, int classCode) {
             this.address = address;
+            this.name = name;
             this.bus = bus;
             this.device = device;
             this.function = function;
@@ -85,7 +110,9 @@ public final class format {
 
     public interface SystemInfo_Methods {
         String getProcessorModel();
-        MemoryInfo getMemoryInfo();
+        MemoryInfo getMemoryInfo(); 
+        // With how inflexible interfaces are, this is just calling getMemoryInfo(unit) but the value of unit is ByteUnits.KiB.
+        MemoryInfo getMemoryInfo(long unit); // as for what this unit is, refer to ByteUnits in this same script
         ArrayList<CoreInfo> getCoreInfos();
         ArrayList<PCIDevice> getPCIDevices();
         ArrayList<USBDevice> getUSBDevices();

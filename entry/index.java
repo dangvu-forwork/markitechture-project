@@ -14,10 +14,11 @@ public class index {
         if (normalizedOs.contains("linux")) {
             currentSys = entry.linux.demo.readSystemInfo();
         } else if (normalizedOs.contains("windows")) {
-            System.out.println("Windows behavior WIP - dang vu");
+            currentSys = entry.windows.demo.readSystemInfo();
         } else {
             System.out.println("Operating system behavior for " + os + " not implemented.");
+            return;
         }
-
+        System.out.println(currentSys);
     }
 }

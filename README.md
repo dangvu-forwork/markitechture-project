@@ -10,26 +10,43 @@ That's it basically <br>
 
 ## how 2 run
 
-Well there's the Makefile behavior and the standalone behavior.
-The Makefile behavior is for those who have access to a Linux system
-Here are the following commands you can run with Makefile
+The Makefile uses GNU Make and Linux classpath syntax. `javac` follows the entry
+point's imports and discovers the required source files under `entry/` with
+`-sourcepath`, so no shell command is needed to build a source-file list:
 
 ```sh
 make build       # Compile the project
 make run         # Run entry.index; it selects behavior based on the OS
-make build-linux # Compile the project... Literally identical to make build for now but maybe this will find its use
-make run-linux   # Run entry.linux.demo directly, without regard for your current OS
+make build-linux # Compile the project
+make run-linux   # Run entry.linux.demo directly
 ```
 
-If you don't have a Linux system, you can also run these commands in a Windows type system (for building)
-```powershell
-New-Item -ItemType Directory -Force out | Out-Null
-$sources = Get-ChildItem entry -Recurse -Filter *.java | ForEach-Object { $_.FullName }
-javac -cp "jar\*" -d out lib\format.java $sources
+To compile with `javac` and run with `java` from the project root on any OS:
+
+Linux commands
+```sh
+javac -cp "jar/*" -sourcepath . -d out lib/format.java entry/index.java
+java -cp "out:jar/*" entry.index
 ```
 
-Yes, a clanker wrote the powershell commands above.
-If you want to run the OS Interpreter / directly run an OS behavior, just copy the code used to run them in Makefile and paste it in terminal
+Windows commands
+```sh
+javac -cp "jar/*" -sourcepath . -d out lib/format.java entry/index.java
+java -cp "out;jar/*" entry.index
+```
+
+
+The `javac` command is the same across operating systems. For the `java`
+command, use `:` between classpath entries on Linux/macOS and `;` on Windows.
+All required third-party JARs are picked up from `jar/`.
+
+The Windows collector uses OSHI for processor, memory, and USB information. PCI
+device IDs and names are read from the Windows registry through JNA Platform.
+The registry may retain records for devices that are no longer connected, and
+location details may be unavailable (`-1`). USB bus/device numbers are also
+unavailable through OSHI and are reported as `-1`.
+
+Run commands from the project root so the `ids` directory is available.
 
 ## The ID files
 
