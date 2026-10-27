@@ -55,3 +55,44 @@ https://pci-ids.ucw.cz/. `ids/usb.ids` is the USB ID list (version 2026.06.26)
 from https://github.com/vcrhonek/hwdata. Both are distributed under the GNU
 General Public License (version 2 or later) or the 3-clause BSD licence. Newer
 copies can be downloaded from those sites.
+
+## HTML report
+
+Requires Java 17 or newer. The main command now writes a self-contained dark
+`index.html` report and opens it in your default browser. It works offline;
+rerun the command to refresh the snapshot. The report includes searchable PCI
+and USB tables, memory usage, processor counters, OS details, and a timestamp.
+Existing `index.html` output is replaced on each run.
+
+After compiling with the commands above, use these Windows examples (replace
+`;` with `:` in the classpath on Linux):
+
+```sh
+java -cp "out;jar/*" entry.index
+java -cp "out;jar/*" entry.index --no-open
+java -cp "out;jar/*" entry.index --output "my-report.html"
+java -cp "out;jar/*" entry.index --json
+java -cp "out;jar/*" entry.index --help
+```
+
+`--output` selects an existing destination directory and filename. `--no-open`
+saves without launching a browser. `--json` prints the shared JSON snapshot and
+cannot be combined with HTML options. If automatic opening is unavailable,
+open the printed report path manually. Platform demo entry points retain their
+existing output behavior. CPU counters are cumulative, not live usage.
+
+The default generated `index.html` and `report-checks/` are ignored by Git.
+Custom report filenames are not automatically ignored.
+
+### Report checks
+
+Compile and run the dependency-free checks from the project root:
+
+```sh
+javac -cp "out;jar/*" -d out tests/ReportChecks.java
+java -cp "out;jar/*" ReportChecks
+```
+
+On Linux, replace the classpath separator with `:`. These checks create a Linux
+hardware fixture in `report-checks/`, verify memory conversions and PCI names,
+and check HTML escaping, empty data, unavailable values, and single collection.
