@@ -6,6 +6,7 @@ import oshi.hardware.CentralProcessor;
 import java.util.ArrayList;
 
 /** Reads processor details and cumulative per-core counters through OSHI. */
+/** A lot of the borderline impossible to understand windows terminal methods were replaced with OSHI. Maybe you are welcome. */
 final class cpuInfo {
     /** Prevents creating an instance of this static helper class. */
     private cpuInfo() {}
@@ -14,6 +15,7 @@ final class cpuInfo {
      * Returns the processor model name reported by OSHI.
      */
     static String getModel() {
+        // hardwareInfo.java, check it
         return hardwareInfo.HARDWARE.getProcessor()
                 .getProcessorIdentifier().getName().trim();
     }

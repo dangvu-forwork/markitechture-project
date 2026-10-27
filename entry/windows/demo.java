@@ -36,6 +36,7 @@ public class demo {
 
         /**
          * Returns total and used physical memory in KiB.
+         * Read getMemoryInfo(long byteUnit) for a better idea, as this method is just here as a generic
          */
         @Override
         public MemoryInfo getMemoryInfo() {
@@ -82,51 +83,64 @@ public class demo {
          */
         @Override
         public String toString() {
+            // A string builder. Used to construct complex strings.
             StringBuilder output = new StringBuilder();
-            output.append("SYSTEM INFORMATION\n");
+            output.append("SYSTEM INFORMATION\n"); // \n means "Line break", which basically tells the output to move to a new line.
             output.append("==================\n\n");
             output.append("PROCESSOR\n");
-            output.append("  Model: ").append(getProcessorModel()).append('\n');
+            output.append("  Model: ").append(getProcessorModel()).append('\n'); 
+            // Calls the "getProcessorModel() method in the windows class. the method references cpuInfo.java
+            // Also appends a line break too."
+            // This is why StringBuilders are useful, because you can chain things together like above.
 
-            ArrayList<CoreInfo> cores = getCoreInfos();
-            output.append("  Logical processors: ").append(cores.size()).append("\n\n");
+            ArrayList<CoreInfo> cores = getCoreInfos(); // Gets all total cores. Reference cpuInfo.java
+            output.append("  Logical processors: ").append(cores.size()).append("\n\n"); // cores.size() is the size of the core ArrayList, which kinda equates to total size
             output.append("  Current cumulative counters (not load percentages):\n");
             for (int i = 0; i < cores.size(); i++) {
                 CoreInfo core = cores.get(i);
-                output.append(String.format(Locale.ROOT,
+                output.append(String.format(Locale.ROOT, 
+                    // Uses the system root locale, a language/country neutral locale.
+                    // e.g. Your system uses, god forbid, a Japanese locale. JVM will see this and unfortunately set your Locale to Japanese...
+                    // And I wouldn't want a Japanese locale when dealing with outputs. That's why I used the ROOT locale.
+                    // Yes, Japanese locale exists.
                         "    Core %d: busy=%d, idle=%d%n", i, core.busy, core.idle));
             }
 
-            MemoryInfo memory = getMemoryInfo();
+            long byteUnit     = ByteUnits.GiB;
+            String bUnitName  = ByteUnits.unitName(byteUnit);
+
+            MemoryInfo memory = getMemoryInfo(byteUnit); // Read: memInfo.java for more information
             output.append("\nMEMORY\n");
             output.append(String.format(Locale.ROOT,
-                    "  Total: %.0f KiB%n  Used:  %.0f KiB%n",
-                    memory.totalMemory, memory.usedMemory));
+                    "  Total: %.0f %s%n  Used:  %.0f %s%n",
+                    memory.totalMemory, bUnitName, memory.usedMemory, bUnitName)); // For now it doesn't support dynamically changing units.
 
-            ArrayList<PCIDevice> pciDevices = getPCIDevices();
+            ArrayList<PCIDevice> pciDevices = getPCIDevices(); // Refer to pciInfo.java
             output.append("\nPCI DEVICES\n");
             if (pciDevices.isEmpty()) {
-                output.append("  No PCI devices found.\n");
+                output.append("  No PCI devices found.\n"); // If it's empty, just dont waste time
             } else {
-                output.append("  Found ").append(pciDevices.size()).append(" device(s):\n");
+                output.append("  Found ").append(pciDevices.size()).append(" device(s):\n"); // Appends size of the ArrayList and a custom string at the end
                 for (PCIDevice device : pciDevices) {
                     output.append(String.format(Locale.ROOT,
                             "  - %s%n"
                                     + "      Location: bus %s, device %s, function %s%n"
                                     + "      Vendor ID: %s  Device ID: %s  Class: %s%n",
                             device.name == null || device.name.isBlank() ? device.address : device.name,
-                            formatNumber(device.bus),
+                            // Above line: If its name doesn't exist / is null, use the address of the device instead. Otherwise, use the device's name.
+                            formatNumber(device.bus), // formatNumber and formatId are basically wrappers that allow for "unknown"s.
                             formatNumber(device.device),
                             formatNumber(device.function),
-                            formatId(device.vendorId),
-                            formatId(device.deviceId),
+                            formatId(device.vendorId), // formatId, in particular, makes it so that the number has to have at least 4 digits.
+                            formatId(device.deviceId), // of course it also allows for unknowns too.
                             device.classCode < 0
                                     ? "unknown"
-                                    : String.format(Locale.ROOT, "0x%06x", device.classCode)));
+                                    : String.format(Locale.ROOT, "0x%06x", device.classCode))); // 0x(print at least 6 hex digits, here's device.classCode!) basically.
+                                    // result looks like 0x040300 for example
                 }
             }
 
-            ArrayList<USBDevice> usbDevices = getUSBDevices();
+            ArrayList<USBDevice> usbDevices = getUSBDevices(); // Read: usbInfo.java
             output.append("\nUSB DEVICES\n");
             if (usbDevices.isEmpty()) {
                 output.append("  No USB devices found.\n");
@@ -147,7 +161,7 @@ public class demo {
          * Displays a valid device ID as four hexadecimal digits or marks it unavailable.
          */
         private static String formatId(int id) {
-            return id < 0 ? "unknown" : String.format(Locale.ROOT, "%04x", id);
+            return id < 0 ? "unknown" : String.format(Locale.ROOT, "%04x", id); // %x means hexadecimal, 04 means "print at least 4 digits"
         }
 
         /**
