@@ -2,6 +2,7 @@ package lib;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.lang.Math;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -26,6 +27,30 @@ public final class format {
         public static final long KiB = 1024L;
         public static final long MiB = 1024L * 1024L;
         public static final long GiB = 1024L * 1024L * 1024L;
+
+        /** Method only compatible with B, KiB, MiB and GiB as defined in here. Please only use like ByteUnits.KiB for example when inputting in here */
+        public static String unitName(long unit){
+            int magnitude   = (int) (Math.log(unit) / Math.log(1024)); // Equates to log1024(unit). Math.log is basically just loge(unit)
+            String unitName = "";
+
+            switch (magnitude){
+                case 0:
+                    unitName = "B";
+                    break;
+                case 1:
+                    unitName = "KiB";
+                    break;
+                case 2:
+                    unitName = "MiB";
+                    break;
+                case 3:
+                    unitName = "GiB";
+                    break;
+            }
+
+            return unitName;
+        }
+
     }
 
     public static class MemoryInfo {
@@ -35,7 +60,6 @@ public final class format {
         public MemoryInfo(double totalMemory, double usedMemory) {
             this.totalMemory = totalMemory;
             this.usedMemory = usedMemory;
-
         }
     }
 
