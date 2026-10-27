@@ -40,18 +40,18 @@ public class demo {
             return getMemoryInfo(ByteUnits.KiB);
         }
 
-        /** 
-         * Gets the memory info (Busy + idle cores) and returns it in the byteUnits format.
-         * NOTE: Directly avoid using powers of 2, since ByteUnits.B, ByteUnits.KiB and whatever exists.
-         * Using powers of 2 makes the code less readable for others.
-         * 
-         * additional QnA
-         * Q: Why did you divide byteUnits by ByteUnits.KiB?
-         * A: .getTotal() and .getUsed() already returns in a KiB format. So in a way, KiB is the default format.
-        */
+        /** Converts Linux's KiB readings into the requested unit, such as ByteUnits.GiB. */
         @Override
         public MemoryInfo getMemoryInfo(long byteUnits) {
-            return new MemoryInfo(memInfo.getTotal() / (byteUnits / ByteUnits.KiB), memInfo.getUsed() / (byteUnits / ByteUnits.KiB));
+            if (byteUnits <= 0) {
+                throw new IllegalArgumentException("Memory unit must be positive");
+            }
+            long total = memInfo.getTotal();
+            long used = memInfo.getUsed();
+            // Convert KiB to bytes first, then divide by the requested unit.
+            // A double keeps fractions; -1 must stay -1 because it means unknown.
+            return new MemoryInfo(total < 0 ? -1 : total * (double) ByteUnits.KiB / byteUnits,
+                    used < 0 ? -1 : used * (double) ByteUnits.KiB / byteUnits);
         }
 
 
@@ -66,9 +66,24 @@ public class demo {
         @Override
         public ArrayList<PCIDevice> getPCIDevices() {
             ArrayList<PCIDevice> devices = new ArrayList<>();
+            idLookup lookup = null;
+            try {
+                lookup = idLookup.pci();
+            } catch (java.io.IOException ignored) {
+                // Device addresses remain usable when the optional database is missing.
+            }
             for (int i = 0; i < pciInfo.getCount(); i++) {
+                String address = pciInfo.getAddress(i);
+                // The database maps numeric vendor/device IDs to friendly names.
+                String name = null;
+                if (lookup != null) {
+                    name = lookup.deviceName(pciInfo.getVendorId(i), pciInfo.getDeviceId(i));
+                }
+                if (name == null) {
+                    name = address;
+                }
                 devices.add(new PCIDevice(
-                        pciInfo.getAddress(i), pciInfo.getBus(i), pciInfo.getDevice(i),
+                        address, name, pciInfo.getBus(i), pciInfo.getDevice(i),
                         pciInfo.getFunction(i), pciInfo.getVendorId(i),
                         pciInfo.getDeviceId(i), pciInfo.getClassCode(i)));
             }
