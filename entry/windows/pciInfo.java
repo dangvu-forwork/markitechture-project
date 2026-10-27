@@ -10,11 +10,16 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/** Welcome to hell.
+ * Honestly, I'll just explain this with a live demonstration later. 
+ * Getting into detail about how all this code works just isn't a good idea. - dang vu
+  */
 /** Reads PCI device information from the Windows Enum registry. */
 final class pciInfo {
     private static final String PCI_REGISTRY_PATH = "SYSTEM\\CurrentControlSet\\Enum\\PCI";
     private static final Pattern VENDOR_AND_DEVICE = Pattern.compile(
             "VEN_([0-9A-F]{4})&DEV_([0-9A-F]{4})", Pattern.CASE_INSENSITIVE);
+            //VEN_1002&DEV_145A
     private static final Pattern CLASS_CODE =
             Pattern.compile("CC_([0-9A-F]{4,6})", Pattern.CASE_INSENSITIVE);
     private static final Pattern LOCATION =
