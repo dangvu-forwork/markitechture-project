@@ -95,7 +95,7 @@ public class demo {
 
             ArrayList<CoreInfo> cores = getCoreInfos(); // Gets all total cores. Reference cpuInfo.java
             output.append("  Logical processors: ").append(cores.size()).append("\n\n"); // cores.size() is the size of the core ArrayList, which kinda equates to total size
-            output.append("  Current cumulative counters (not load percentages):\n");
+            output.append("  Current cumulative counters (not load percentages or memory sizes):\n");
             for (int i = 0; i < cores.size(); i++) {
                 CoreInfo core = cores.get(i);
                 output.append(String.format(Locale.ROOT, 
@@ -106,13 +106,13 @@ public class demo {
                         "    Core %d: busy=%d, idle=%d%n", i, core.busy, core.idle));
             }
 
-            long byteUnit     = ByteUnits.GiB;
+            long byteUnit     = ByteUnits.MiB;
             String bUnitName  = ByteUnits.unitName(byteUnit);
 
             MemoryInfo memory = getMemoryInfo(byteUnit); // Read: memInfo.java for more information
             output.append("\nMEMORY\n");
             output.append(String.format(Locale.ROOT,
-                    "  Total: %.0f %s%n  Used:  %.0f %s%n",
+                    "  Total: %.1f %s%n  Used:  %.1f %s%n",
                     memory.totalMemory, bUnitName, memory.usedMemory, bUnitName)); // For now it doesn't support dynamically changing units.
 
             ArrayList<PCIDevice> pciDevices = getPCIDevices(); // Refer to pciInfo.java
